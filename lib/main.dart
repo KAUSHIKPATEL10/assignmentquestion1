@@ -35,19 +35,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
- Future<List<Pokemon>> GetJson(){
-   Uri url= Uri.parse("https://dummyapi.online/api/pokemon");
-   var data=http.get(url);
+  Future<List<poke>> GetJson() async{
+    Uri url= Uri.parse("https://dummyapi.online/api/pokemon");
+    var data=await http.get(url);
 
-   var JsonData = json.decode(data.body);
-   List<Pokemon> items =[];
-   for (var pa in JsonData){
-     Pokemon p = Pokemon(pa["pokemon"],pa["image_url"],pa["type"]);
-     items.add(p);
+    var JsonData = json.decode(data.body);
+    List<poke> items =[];
+    for (var pa in JsonData){
+      poke p = poke(pa["pokemon"],pa["type"],pa["image_url"]);
+      items.add(p);
 
-   }
-   return items;
- }
+
+    }
+    return items;
+  }
 
 
   @override
@@ -62,44 +63,46 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Container(
         child: FutureBuilder(
-          future: GetJson(),
-        builder: (BuildContext context ,AsyncSnapshot snapshot){
-            if(snapshot.data == null){
-              return Container(
-                child: Center(
-                  child: Text("Loading.....")
-                ),
-              );
-            }
-            else{
-
-              return ListView.builder(
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (BuildContext context ,int index){
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(snapshot.data[index].imageUrl),
-
+            future: GetJson(),
+            builder: (BuildContext context ,AsyncSnapshot snapshot){
+              if(snapshot.data == null){
+                return Container(
+                  child: Center(
+                      child: Text("Loading.....")
                   ),
-                  title: Text(snapshot.data[index].pokemon),
-                  subtitle: Text(snapshot.data[index].type),
                 );
-              });
+              }
+              else{
+
+                return ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (BuildContext context ,int index){
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(snapshot.data[index].image_url),
+
+                        ),
+                        title: Text(snapshot.data[index].pokemon),
+                        subtitle: Text(snapshot.data[index].type),
+
+                      );
+                    });
+              }
             }
-        }
         ),
 
 
 
 
-        ),
-      );
+      ),
+    );
 
   }
 }
- class Pokemon {
+class poke {
   String pokemon;
   String type;
   String image_url;
-  Pokemon(this.pokemon,this.image_url,this.type);
- }
+  poke(this.pokemon,this.type,this.image_url);
+}
+
